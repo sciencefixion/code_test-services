@@ -1,10 +1,12 @@
 Encoding.default_external = Encoding::UTF_8
 Encoding.default_internal = Encoding::UTF_8
 
+require 'dotenv/load'
 require 'faraday'
 require 'json'
 require 'minitest/autorun'
 require 'minitest/reporters'
+require 'minitest/pride'
 require 'pry'
 
 def test_client
