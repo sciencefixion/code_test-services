@@ -7,9 +7,7 @@ class ApiTest < Minitest::Test
 
   def test_no_api_key
     make_request('?s=star', 'http://www.omdbapi.com/')
-    # puts last_response.body
-
-
+  
     expected = "{\"Response\":\"False\",\"Error\":\"No API key provided.\"}"
 
     assert_equal last_response.body, expected
@@ -18,14 +16,10 @@ class ApiTest < Minitest::Test
   def test_it_can_search_thomas
     make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
 
-    response = JSON.parse(last_response.body, symbolize_names: true)
+    assert_instance_of Hash, parsed_response
+    assert_equal parsed_response[:Search].size, 10
 
-    assert_instance_of Hash, response
-    assert_equal response[:Search].size, 10
-
-    results = response[:Search]
-
-    results.each do |r|
+    search_results.each do |r|
       assert r[:Title].downcase.include?('thomas')
       assert r.has_key?(:Title)
       assert r.has_key?(:Year)
@@ -48,11 +42,7 @@ class ApiTest < Minitest::Test
   def test_for_valid_imdbIDs
     make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
 
-    response = JSON.parse(last_response.body, symbolize_names: true)
-
-    results = response[:Search]
-
-    imdbID_arr = results.reduce(Array.new) do |arr, r|
+    imdbID_arr = search_results.reduce(Array.new) do |arr, r|
       arr << r[:imdbID]
       arr
     end
@@ -66,20 +56,14 @@ class ApiTest < Minitest::Test
     imdbID_arr.each do |id|
       make_request("?i=#{id}&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
 
-      response = JSON.parse(last_response.body, symbolize_names: true)
-
-      assert response[:Response]
+      assert parsed_response[:Response]
     end
   end
 
   def test_for_valid_image_links_on_page_one
     make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
 
-    response = JSON.parse(last_response.body, symbolize_names: true)
-
-    results = response[:Search]
-
-    results.each do |r|
+    search_results.each do |r|
       assert_equal 200, make_request(r[:Poster]).status
     end
   end
@@ -89,11 +73,7 @@ class ApiTest < Minitest::Test
       five_pages_results = []
       make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}&page=#{num}", 'http://www.omdbapi.com/')
 
-      response = JSON.parse(last_response.body, symbolize_names: true)
-
-      results = response[:Search]
-
-      results.each do |r|
+      search_results.each do |r|
         five_pages_results << r
       end
       five_pages_results
@@ -107,10 +87,8 @@ class ApiTest < Minitest::Test
   def test_for_writer_director_star_of_the_room
     make_request("?t=The Room&y=2003&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
 
-    response = JSON.parse(last_response.body, symbolize_names: true)
-
-    assert_equal "Tommy Wiseau", response[:Writer]
-    assert_equal "Tommy Wiseau", response[:Director]
-    assert_includes response[:Actors], "Tommy Wiseau"
+    assert_equal "Tommy Wiseau", parsed_response[:Writer]
+    assert_equal "Tommy Wiseau", parsed_response[:Director]
+    assert_includes parsed_response[:Actors], "Tommy Wiseau"
   end
 end

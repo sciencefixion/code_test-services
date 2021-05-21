@@ -31,6 +31,14 @@ def last_response
   @last_response
 end
 
+def parsed_response
+  JSON.parse(last_response.body, symbolize_names: true)
+end
+
+def search_results
+  parsed_response[:Search]
+end
+
 def last_curl
   @curl
 end
