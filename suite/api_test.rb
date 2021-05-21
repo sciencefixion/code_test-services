@@ -32,12 +32,16 @@ class ApiTest < Minitest::Test
       assert r.has_key?(:imdbID)
       assert r.has_key?(:Type)
       assert r.has_key?(:Poster)
-      # TODO: verify title value is a string
-      # TODO: " year value is a string
-      # TODO: " imdbID value is a string
-      # TODO: " type value is a string
-      # TODO: " Poster value is a string
-      # TODO: Verify year matches correct format
+      assert_kind_of String, r[:Title]
+      assert_kind_of String, r[:Year]
+      assert_kind_of String, r[:imdbID]
+      assert_kind_of String, r[:Type]
+      assert_kind_of String, r[:Poster]
+      if r[:Type] == "movie"
+        assert_equal 4, r[:Year].size
+      else
+        assert_equal 9, r[:Year].size
+      end
     end
   end
 end
