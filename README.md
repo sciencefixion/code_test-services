@@ -49,10 +49,10 @@ It is time to run some tests against OMDb API - The Open Movie Database!
 
   3. Extended api_test.rb by creating a test that performs a search on 'thomas'.
 
-    - Verified all titles are a relevant match.
-    - Verified keys include Title, Year, imdbID, Type, and Poster for all records in the response.
-    - Verified values are all of the correct object class.
-    - Verified year matches correct format.
+  - Verified all titles are a relevant match.
+  - Verified keys include Title, Year, imdbID, Type, and Poster for all records in the response.
+  - Verified values are all of the correct object class.
+  - Verified year matches correct format.
 
 
   4. Added a test that uses the i parameter to verify each title on page one is accessible via imdbID.
