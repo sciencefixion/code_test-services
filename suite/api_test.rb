@@ -37,7 +37,7 @@ class ApiTest < Minitest::Test
       assert_kind_of String, r[:imdbID]
       assert_kind_of String, r[:Type]
       assert_kind_of String, r[:Poster]
-      if r[:Type] == "movie"
+      if r[:Type] == "movie" || r[:Type] == "episode"
         assert_equal 4, r[:Year].size
       else
         assert_equal 9, r[:Year].size
@@ -58,7 +58,7 @@ class ApiTest < Minitest::Test
     end
 
     imdbID_arr.each do |id|
-      assert_equal 9, id.size
+      assert_equal 9 || 10 , id.size
       assert_equal "tt", id[0..1]
       assert_kind_of Integer, id[2..8].to_i
     end
@@ -69,6 +69,18 @@ class ApiTest < Minitest::Test
       response = JSON.parse(last_response.body, symbolize_names: true)
 
       assert response[:Response]
+    end
+  end
+
+  def test_for_valid_image_links_on_page_one
+    make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
+
+    response = JSON.parse(last_response.body, symbolize_names: true)
+
+    results = response[:Search]
+
+    results.each do |r|
+      assert_equal 200, make_request(r[:Poster]).status
     end
   end
 end
