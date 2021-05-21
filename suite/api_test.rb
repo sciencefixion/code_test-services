@@ -44,4 +44,31 @@ class ApiTest < Minitest::Test
       end
     end
   end
+
+  def test_for_valid_imdbIDs
+    make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
+
+    response = JSON.parse(last_response.body, symbolize_names: true)
+
+    results = response[:Search]
+
+    imdbID_arr = results.reduce(Array.new) do |arr, r|
+      arr << r[:imdbID]
+      arr
+    end
+
+    imdbID_arr.each do |id|
+      assert_equal 9, id.size
+      assert_equal "tt", id[0..1]
+      assert_kind_of Integer, id[2..8].to_i
+    end
+
+    imdbID_arr.each do |id|
+      make_request("?i=#{id}&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
+
+      response = JSON.parse(last_response.body, symbolize_names: true)
+
+      assert response[:Response]
+    end
+  end
 end
