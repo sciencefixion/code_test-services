@@ -83,4 +83,24 @@ class ApiTest < Minitest::Test
       assert_equal 200, make_request(r[:Poster]).status
     end
   end
+
+  def test_for_no_duplicate_records_across_first_five_pages
+    five_page_arr = [1..5].each do |num|
+      five_pages_results = []
+      make_request("?s=thomas&apikey=#{ENV['OMDB_KEY']}&page=#{num}", 'http://www.omdbapi.com/')
+
+      response = JSON.parse(last_response.body, symbolize_names: true)
+
+      results = response[:Search]
+
+      results.each do |r|
+        five_pages_results << r
+      end
+      five_pages_results
+    end
+
+    duplicates = five_page_arr.detect {|e| five_page_arr.rindex(e) != five_page_arr.index(e)}
+
+    assert_nil duplicates
+  end
 end
