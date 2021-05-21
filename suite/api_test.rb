@@ -103,4 +103,14 @@ class ApiTest < Minitest::Test
 
     assert_nil duplicates
   end
+
+  def test_for_writer_director_star_of_the_room
+    make_request("?t=The Room&y=2003&apikey=#{ENV['OMDB_KEY']}", 'http://www.omdbapi.com/')
+
+    response = JSON.parse(last_response.body, symbolize_names: true)
+
+    assert_equal "Tommy Wiseau", response[:Writer]
+    assert_equal "Tommy Wiseau", response[:Director]
+    assert_includes response[:Actors], "Tommy Wiseau"
+  end
 end
